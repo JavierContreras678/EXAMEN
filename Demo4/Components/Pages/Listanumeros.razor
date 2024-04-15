@@ -1,0 +1,81 @@
+﻿@page "/Listanumeros"
+@rendermode InteractiveServer
+
+<PageTitle>Lista de Números</PageTitle>
+
+<h1>Lista de Números</h1>
+<div class="main-container">
+    <div class="row">
+        <div class="col d-flex align-items-center m-3">
+            <label class="form-label m-3">Número 1</label>
+            <input type="number" @bind="Numero1" class="form-control m-3" placeholder="0" />
+        </div>
+        <div class="col d-flex align-items-center m-3">
+            <label class="form-label m-3">Número 2</label>
+            <input type="number" @bind="Numero2" class="form-control m-3" placeholder="0" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col d-flex justify-content-start">
+            <button @onclick="Calcular" class="btn-primary m-5">Calcular</button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <table class="table table-striped" id="tabla_pares">
+                <thead>
+                    <tr>
+                        <th>Pares</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var numero in NumerosPares)
+                    {
+                        <tr><td>@numero</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col">
+            <table class="table table-striped" id="tabla_impares">
+                <thead>
+                    <tr>
+                        <th>Impares</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var numero in NumerosImpares)
+                    {
+                        <tr><td>@numero</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int Numero1 = 0;
+    private int Numero2 = 0;
+    private List<int> NumerosPares = new List<int>();
+    private List<int> NumerosImpares = new List<int>();
+
+    private void Calcular()
+    {
+        int mayor = Math.Max(Numero1, Numero2);
+        int menor = Math.Min(Numero1, Numero2);
+
+        NumerosPares.Clear();
+        NumerosImpares.Clear();
+
+        for (int i = menor; i <= mayor; i++)
+        {
+            if (i % 2 == 0)
+                NumerosPares.Add(i);
+            else
+                NumerosImpares.Add(i);
+        }
+    }
+}

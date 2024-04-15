@@ -1,0 +1,132 @@
+﻿@page "/canciones"
+@rendermode InteractiveServer
+
+<h3>Lista de títulos de canciones</h3>
+
+<div class="mb-3">
+    <label for="nuevoTitulo" class="form-label">Nuevo título:</label>
+    <input @bind="_nuevoTitulo" type="text" class="form-control" name="nuevoTitulo" />
+    <button @onclick="AgregarTitulo" class="btn btn-primary mt-3">Agregar título</button>
+</div>
+
+<div class="mb-3">
+    <label for="orden">Ordenar por:</label>
+    <select @bind="_orden" class="form-select" id="orden">
+        <option value="Ascendente">Ascendente</option>
+        <option value="Descendente">Descendente</option>
+    </select>
+    <button class="btn btn-secondary mt-3" @onclick="AplicarFiltroYOrden">Ordenar</button>
+</div>
+
+<div class="mb-3">
+    <label for="filtro" class="form-label">Filtrar por:</label>
+    <input @bind="_filtro" type="text" class="form-control" name="filtro" />
+    <button class="btn btn-secondary mt-3" @onclick="AplicarFiltroYOrden">Filtrar</button>
+</div>
+
+
+@if (_titulosMostrados.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var titulo in _titulosMostrados)
+            {
+                <tr>
+                    <td>
+                        @if (titulo == _tituloEditando)
+                        {
+                            <input @bind="_nuevoTituloEditado" type="text" class="form-control" />
+                        }
+                        else
+                        {
+                            @titulo
+                        }
+                    </td>
+                    <td>
+                        @if (titulo == _tituloEditando)
+                        {
+                            <button @onclick="() => GuardarEdicion(titulo)" class="btn btn-success btn-sm">Guardar</button>
+                        }
+                        else
+                        {
+                            <button @onclick="() => EditarTitulo(titulo)" class="btn btn-secondary btn-sm">Editar</button>
+                        }
+                        <button @onclick="() => EliminarTitulo(titulo)" class="btn btn-danger btn-sm">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No hay títulos de canciones.</p>
+}
+
+@code {
+    private string _nuevoTitulo;
+    private string _nuevoTituloEditado;
+    private List<string> _titulos = new List<string>();
+    private List<string> _titulosMostrados = new List<string>();
+    private string _orden = "Ascendente";
+
+    private string _filtro;
+
+    private string _tituloEditando;
+
+
+    private void AgregarTitulo()
+    {
+        if (!string.IsNullOrWhiteSpace(_nuevoTitulo))
+        {
+            _titulos.Add(_nuevoTitulo);
+            _nuevoTitulo = "";
+        }
+
+        AplicarFiltroYOrden();
+    }
+
+    private void EliminarTitulo(string titulo)
+    {
+        _titulos.Remove(titulo);
+
+        AplicarFiltroYOrden();
+    }
+
+    private void EditarTitulo(string titulo)
+    {
+        _tituloEditando = titulo;
+        _nuevoTituloEditado = titulo;
+    }
+
+    private void GuardarEdicion(string tituloAnterior)
+    {
+        var indice = _titulos.IndexOf(tituloAnterior);
+        _titulos[indice] = _nuevoTituloEditado;
+        _tituloEditando = null;
+        AplicarFiltroYOrden();
+    }
+
+    private void AplicarFiltroYOrden()
+    {
+        _titulosMostrados = _titulos
+            .Where(t => string.IsNullOrWhiteSpace(_filtro) || t.ToLower().Contains(_filtro.ToLower()))
+            .ToList();
+
+        if (_orden == "Ascendente")
+        {
+            _titulosMostrados.Sort();
+        }
+        else
+        {
+            _titulosMostrados.Sort();
+            _titulosMostrados.Reverse();
+        }
+    }
+}

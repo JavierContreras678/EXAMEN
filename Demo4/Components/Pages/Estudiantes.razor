@@ -1,0 +1,85 @@
+﻿@page "/estudiantes"
+@rendermode InteractiveServer
+@using Demo4.clases
+
+<PageTitle>Estudiantes</PageTitle>
+
+<EditForm Model="@_estudiante" OnValidSubmit="@Guardar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <h1>Estudiantes</h1>
+    <label class="form-label">Nombre</label>
+    <input @bind="_estudiante.Nombre" class="form-control" />
+    <ValidationMessage For="@(() => _estudiante.Nombre)" />
+
+    <label class="form-label">Correo</label>
+    <input @bind="_estudiante.Correo" class="form-control" />
+    <ValidationMessage For="@(() => _estudiante.Correo)" />
+
+    <label class="form-label">Calificación</label>
+    <input @bind="_estudiante.Calificacion" class="form-control" />
+    <ValidationMessage For="@(() => _estudiante.Calificacion)" />
+
+    <button type="submit" class="btn btn-primary m-3">Guardar</button>
+</EditForm>
+
+@if (estudiantes.Count() > 0)
+{
+    <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Calificación</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Estudiante elemento in estudiantes)
+            {
+                <tr>
+                    <td>@elemento.Nombre</td>
+                    <td>@elemento.Correo</td>
+                    <td>@elemento.Calificacion</td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="()=>Eliminar(elemento)">Borrar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+
+@code {
+    private List<Estudiante> estudiantes = [];
+    private Estudiante _estudiante = new Estudiante();
+
+    private void Guardar()
+    {
+        if (!string.IsNullOrEmpty(_estudiante.Nombre))
+        {
+            estudiantes.Add(_estudiante);
+            _estudiante = new Estudiante();
+        }
+    }
+
+    private void Limpiar()
+    {
+        estudiantes.Clear();
+    }
+
+    private void Filtrar()
+    {
+        estudiantes = estudiantes.Where(e => e.Nombre.Contains(_estudiante.Nombre)).ToList();
+    }
+
+    private void Eliminar(Estudiante estudiante)
+    {
+        estudiantes.Remove(estudiante);
+    }
+
+
+}

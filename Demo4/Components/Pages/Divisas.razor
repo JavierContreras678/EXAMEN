@@ -1,0 +1,32 @@
+﻿@page "/divisas"
+@rendermode InteractiveServer
+
+<PageTitle>Cambio Moneda</PageTitle>
+
+<h1>Cambio de la Moneda</h1>
+<label class="form-label">Pesos MX:</label>
+<input @bind="input1" class="form-control" />
+
+<button @onclick="Calcular" class="btn btn-primary m-3">Convertir</button>
+<br />
+
+<label class="form-label">Dolar:</label>
+<input @bind="dolares" class="form-control" readonly />
+<label class="form-label">Euro:</label>
+<input @bind="euros" class="form-control" readonly />
+<label class="form-label">Libra:</label>
+<input @bind="libras" class="form-control" readonly />
+@code {
+    private decimal input1 = 0m; 
+    private decimal dolares = 0m;
+    private decimal euros = 0m;
+    private decimal libras = 0m;
+
+    private void Calcular()
+    {
+        dolares = input1 * 0.06m;
+        euros = input1 * 0.055m;
+        libras = input1 * 0.047m;
+    }
+
+}

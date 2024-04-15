@@ -1,0 +1,122 @@
+﻿@page "/inventario"
+@rendermode InteractiveServer
+@using Demo4.Productos
+
+<h3>Productos</h3>
+
+<div class="mb-3">
+    <label for="inventario" class="form-label">Inventario:</label>
+    <input @bind="_nuevoInventario" type="number" class="form-control" name="nuevoinventario" />
+</div>
+
+<div class="mb-3">
+    <label for="nombre" class="form-label">Nombre:</label>
+    <input @bind="_nombre" type="text" class="form-control" name="nuevonombre" />
+</div>
+
+<div>
+    <input type="radio" id="fruta" name="opcion" value="fruta" checked="@(_tipoDepartamento == "fruta")" @onchange="e => _tipoDepartamento = e.Value.ToString()" />
+    <label for="fruta">Fruta</label>
+    <br />
+
+    <input type="radio" id="verdura" name="opcion" value="verdura" checked="@(_tipoDepartamento == "verdura")" @onchange="e => _tipoDepartamento = e.Value.ToString()" />
+    <label for="verdura">Verdura</label>
+    <br />
+
+    <input type="radio" id="lacteo" name="opcion" value="lacteo" checked="@(_tipoDepartamento == "lacteo")" @onchange="e => _tipoDepartamento = e.Value.ToString()" />
+    <label for="lacteo">Lácteo</label>
+</div>
+
+
+
+
+<button @onclick="AgregarInventario" class="btn btn-primary mt-3">Agregar inventario</button>
+
+
+@if (_productos.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Inventario</th>
+                <th>Nombre</th>
+                <th>Departamento</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var producto in _productos)
+            {
+                <tr>
+                    <td>@producto.Inventario</td>
+                    <td>@producto.Nombre</td>
+                    <td>@producto.Departamento</td>
+                    <td>
+                        @if (producto == _productoEditando)
+                        {
+                            <button @onclick="() => GuardarEdicion(producto)" class="btn btn-success btn-sm">Guardar</button>
+                        }
+                        else
+                        {
+                            <button @onclick="() => Editar(producto)" class="btn btn-secondary btn-sm">Editar</button>
+                        }
+                        <button @onclick="() => Eliminar(producto)" class="btn btn-danger btn-sm">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No hay inventario registrado.</p>
+}
+
+@code {
+    private string _tipoDepartamento;
+    private string _nuevoInventario;
+    private string _nombre;
+    private List<Producto> _productos = new List<Producto>();
+    private Producto _productoEditando;
+
+    private void AgregarInventario()
+    {
+        if (!string.IsNullOrWhiteSpace(_nuevoInventario) && !string.IsNullOrWhiteSpace(_nombre))
+        {
+            var nuevoProducto = new Producto
+            {
+                Inventario = _nuevoInventario,
+                Nombre = _nombre,
+                Departamento = _tipoDepartamento
+            };
+
+            _productos.Add(nuevoProducto);
+            _nuevoInventario = "";
+            _nombre = "";
+        }
+    }
+
+    private void Eliminar(Producto producto)
+    {
+        _productos.Remove(producto);
+    }
+
+    private void Editar(Producto producto)
+    {
+        _productoEditando = producto;
+        _nuevoInventario = producto.Inventario;
+        _nombre = producto.Nombre;
+        _tipoDepartamento = producto.Departamento;
+    }
+
+    private void GuardarEdicion(Producto producto)
+    {
+        producto.Inventario = _nuevoInventario;
+        producto.Nombre = _nombre;
+        producto.Departamento = _tipoDepartamento;
+
+
+        _nuevoInventario = "";
+        _nombre = "";
+    }
+}

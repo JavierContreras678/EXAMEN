@@ -1,0 +1,15 @@
+﻿@page "/formulario"
+@rendermode InteractiveServer
+<h3>Hola @_mensaje</h3>
+<label class="form_label">Nombre</label>
+<input @bind="_nombre" class="form_control"> 
+<button @onclick="Saludo" class="btn btn-primary mt-4">Saludar</button>
+@code {
+    private string _nombre = "Juan";
+    private string _mensaje = " mundo";
+    private void Saludo()
+    {
+        _mensaje = _nombre;
+    }
+    
+}

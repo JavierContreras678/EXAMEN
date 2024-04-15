@@ -1,0 +1,94 @@
+﻿@page "/actividades"
+@rendermode InteractiveServer
+<style>
+    .completado {
+        text-decoration: underline;
+    }
+    .completado-checkbox {
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+    }
+</style>
+
+<h3>Lista de Tareas por Hacer</h3>
+
+<div class="mb-3">
+    <label for="nuevaActividad" class="form-label">Nueva actividad:</label>
+    <input @bind="_nuevaActividad" type="text" class="form-control" name="nuevaActividad" @onkeydown="HandleKeyDown" />
+</div>
+<button @onclick="AgregarActividad" class="btn btn-primary">Agregar actividad</button>
+
+@if (_actividades.Any())
+{
+    <h4 class="mt-3">Actividades por hacer:</h4>
+    <ul class="list-group mt-3">
+        @foreach (var actividad in _actividades)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" @onchange="() => MarcarComoHecho(actividad)" />
+                    <label class="form-check-label @(EsActividadCompletada(actividad) ? "completado" : "")">@actividad</label>
+                </div>
+            </li>
+        }
+    </ul>
+}
+
+@if (_actividadesHechas.Any())
+{
+    <h4 class="mt-3">Actividades completadas:</h4>
+    <ul class="list-group mt-3">
+        @foreach (var actividad in _actividadesHechas)
+        {
+            <li class="list-group-item completado-checkbox">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" checked disabled />
+                    <label class="form-check-label completado">@actividad</label>
+                </div>
+            </li>
+        }
+    </ul>
+
+}
+@code {
+    private string _nuevaActividad;
+    private List<string> _actividades = new List<string>();
+    private List<string> _actividadesHechas = new List<string>();
+
+    private void AgregarActividad()
+    {
+        if (!string.IsNullOrWhiteSpace(_nuevaActividad))
+        {
+            _actividades.Add(_nuevaActividad);
+            _nuevaActividad = "";
+        }
+    }
+
+    private void MarcarComoHecho(string actividad)
+    {
+        if (_actividadesHechas.Contains(actividad))
+        {
+            _actividadesHechas.Remove(actividad);
+        }
+        else
+        {
+            _actividadesHechas.Add(actividad);
+            _actividades.Remove(actividad);
+        }
+    }
+
+    private Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            AgregarActividad();
+        }
+        return Task.CompletedTask;
+    }
+
+    // Método para verificar si una actividad está marcada como completa
+    private bool EsActividadCompletada(string actividad)
+    {
+        return _actividadesHechas.Contains(actividad);
+    }
+}
